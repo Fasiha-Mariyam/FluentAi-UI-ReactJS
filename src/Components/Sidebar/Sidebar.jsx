@@ -44,7 +44,7 @@ const drawerWidth = 240;
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(1),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -105,6 +105,12 @@ function Sidebar(props) {
       }
     }
   };
+  React.useEffect(() => {
+    if (isSmallScreen) {
+      setOpen(false);
+      setMobileOpen(true);
+    }
+  }, [isSmallScreen]);
 
   const pages = [
     {
@@ -218,12 +224,19 @@ function Sidebar(props) {
         <Toolbar
           sx={{
             display: "flex",
+            width: "100%",
             justifyContent: "space-between",
             bgcolor: "white",
             color: "black",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -261,7 +274,7 @@ function Sidebar(props) {
             </div>
           )}
           {isMobile && (
-            <IconButton color="inherit" aria-label="small-screen-btn">
+            <IconButton aria-label="small-screen-btn" sx={{ pr: 0 }}>
               <SmallScreenBtn />
             </IconButton>
           )}
