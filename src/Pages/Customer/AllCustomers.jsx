@@ -70,7 +70,7 @@ export default function AllCustomers() {
             </Box>
           </Box>
           <Box>
-            <Box sx={{ mt: 5 ,  mb:2}}>
+            <Box sx={{ mt: 5, mb: 2 }}>
               <AllCustomerTable heading={"Fluent AI Customers Table "} />
             </Box>
           </Box>

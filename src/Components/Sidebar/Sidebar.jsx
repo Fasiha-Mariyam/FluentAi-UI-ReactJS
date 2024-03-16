@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types";
 import {
   styled,
   useTheme,
@@ -22,6 +23,8 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useMediaQuery } from "@mui/material";
+//pictures
 import CouponWhite from "../../assets/images/Group 1171275614.png";
 import CouponBlue from "../../assets/images/Group 1171275613.png";
 import CustomerWhite from "../../assets/images/Group 1171275486.png";
@@ -34,26 +37,25 @@ import Logo from "../../assets/images/logo1.png";
 import loggedout from "../../assets/images/loggedout.png";
 import style from "../../assets/images/style=fill.png";
 import Ellipse from "../../assets/images/Ellipse 9.png";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import SmallScreenBtn from "../Button/SmallScreenBtn";
-
-const drawerWidth = 250;
+//Sidebar is working now
+const drawerWidth = 240;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
     flexGrow: 1,
-    padding: theme.spacing(0),
+    padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: `-${drawerWidth}px`,
+    marginLeft: `10px`,
     ...(open && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
       }),
-      marginLeft: 0,
+      marginLeft: `250px`,
     }),
   })
 );
@@ -84,19 +86,24 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-export default function Sidebar({ data }) {
+function Sidebar(props) {
+  const { window, data } = props;
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const [open, setOpen] = React.useState(true);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [open, setOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isClosing, setIsClosing] = React.useState(false);
   const isMobile = useMediaQuery("(max-width: 600px)");
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
+  const handleDrawerToggle = () => {
+    if (!isClosing) {
+      if (isSmallScreen) {
+        setMobileOpen(!mobileOpen);
+      } else {
+        setOpen(!open);
+      }
+    }
   };
 
   const pages = [
@@ -125,164 +132,169 @@ export default function Sidebar({ data }) {
       iconBlue: PartnerBlue,
     },
   ];
-
   const currentPage = pages.find((page) => page.path === location.pathname);
   const currentPageName = currentPage ? currentPage.name : "Dashboard";
   const handlePageNavigation = (path) => {
     navigate(path);
   };
 
-  // Create custom theme with desired typography
-  const customTheme = createTheme({
-    typography: {
-      fontFamily: "outfit", // Specify your custom font family here
-    },
-  });
+  const drawer = (
+    <div>
+      <DrawerHeader>
+        <img src={Logo} alt="" height={isSmallScreen ? 50 : 40} />
+        {!isSmallScreen && (
+          <IconButton onClick={handleDrawerToggle}>
+            {theme.direction === "ltr" ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
+          </IconButton>
+        )}
+      </DrawerHeader>
+      <Divider />
+      <List sx={{ color: "white", fontFamily: "outfit", mx: 2 }}>
+        {pages.map((page) => (
+          <ListItem
+            key={page.name}
+            disablePadding
+            sx={{
+              display: "block",
+              my: 2,
+              backgroundColor:
+                location.pathname === page.path ? "white" : "transparent",
+              color: location.pathname === page.path ? "#3F51B5" : "white",
+              boxShadow:
+                location.pathname === page.path
+                  ? "5px 5px 5px 5px rgba(0, 0, 0, 0.1)" // Add shadow when active
+                  : "none",
+              borderRadius:
+                location.pathname === page.path
+                  ? "10px" // Add border when active
+                  : "none",
+            }}
+            onClick={() => handlePageNavigation(page.path)}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  ml: 2,
+                  mr: 1,
+                  color: "white",
+                  justifyContent: "center",
+                }}
+              >
+                {location.pathname === page.path ? (
+                  <img src={page.iconBlue} alt="" />
+                ) : (
+                  <img src={page.iconWhite} alt="" />
+                )}
+              </ListItemIcon>
+              <ListItemText
+                primary={page.name}
+                // sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <ThemeProvider theme={customTheme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar position="fixed" open={open}>
-          <Toolbar
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              bgcolor: "white",
-              color: "black",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={{ mr: 2, ...(open && { display: "none" }) }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography
-                variant="h6"
-                noWrap
-                component="div"
-                fontWeight={"bold"}
-                fontFamily={"outfit"}
-              >
-                {currentPageName === "Customers"
-                  ? "All Customers"
-                  : currentPageName}
-              </Typography>
-            </div>
-
-            {!isMobile && (
-              <div>
-                {/* Add your three icons here */}
-                <IconButton color="inherit" aria-label="icon1">
-                  <img src={loggedout} alt="" />
-                </IconButton>
-                <IconButton color="inherit" aria-label="icon2">
-                  <img src={style} alt="" />
-                </IconButton>
-                <IconButton color="inherit" aria-label="icon3">
-                  <img src={Ellipse} alt="" />
-                </IconButton>
-              </div>
-            )}
-            {isMobile && (
-              <IconButton color="inherit" aria-label="small-screen-btn">
-                <SmallScreenBtn />
-              </IconButton>
-            )}
-          </Toolbar>
-        </AppBar>
-
-        <Drawer
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="fixed" open={open}>
+        <Toolbar
           sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: drawerWidth,
-              boxSizing: "border-box",
-              bgcolor: "#3F51B5",
-            },
+            display: "flex",
+            justifyContent: "space-between",
+            bgcolor: "white",
+            color: "black",
           }}
-          role="presentation"
-          variant="persistent"
-          anchor="left"
-          open={open}
         >
-          <DrawerHeader>
-            <img src={Logo} alt="" height={40} />
-            <IconButton onClick={handleDrawerClose} sx={{ color: "white" }}>
-              {theme.direction === "ltr" ? (
-                <ChevronLeftIcon />
-              ) : (
-                <ChevronRightIcon />
-              )}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerToggle}
+              edge="start"
+              sx={{ mr: 2, ...(isSmallScreen && { display: "block" }) }}
+            >
+              <MenuIcon />
             </IconButton>
-          </DrawerHeader>
-          <Divider />
-          <List sx={{ color: "white", fontFamily: "outfit", mx: 2 }}>
-            {pages.map((page) => (
-              <ListItem
-                key={page.name}
-                disablePadding
-                sx={{
-                  display: "block",
-                  my: 2,
-                  backgroundColor:
-                    location.pathname === page.path ? "white" : "transparent",
-                  color: location.pathname === page.path ? "#3F51B5" : "white",
-                  boxShadow:
-                    location.pathname === page.path
-                      ? "5px 5px 5px 5px rgba(0, 0, 0, 0.1)" // Add shadow when active
-                      : "none",
-                  borderRadius:
-                    location.pathname === page.path
-                      ? "10px" // Add border when active
-                      : "none",
-                }}
-                onClick={() => handlePageNavigation(page.path)}
-              >
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      ml: 2,
-                      mr: 1,
-                      color: "white",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {location.pathname === page.path ? (
-                      <img src={page.iconBlue} alt="" />
-                    ) : (
-                      <img src={page.iconWhite} alt="" />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={page.name}
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-        {open && isMobile ? null : (
-          <Main open={open && !isMobile}>
-            <DrawerHeader />
-            {data}
-          </Main>
-        )}
-      </Box>
-    </ThemeProvider>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              fontWeight={"bold"}
+              fontFamily={"outfit"}
+            >
+              {currentPageName === "Customers"
+                ? "All Customers"
+                : currentPageName}
+            </Typography>
+          </div>
+
+          {!isMobile && (
+            <div>
+              {/* Add your three icons here */}
+              <IconButton color="inherit" aria-label="icon1">
+                <img src={loggedout} alt="" />
+              </IconButton>
+              <IconButton color="inherit" aria-label="icon2">
+                <img src={style} alt="" />
+              </IconButton>
+              <IconButton color="inherit" aria-label="icon3">
+                <img src={Ellipse} alt="" />
+              </IconButton>
+            </div>
+          )}
+          {isMobile && (
+            <IconButton color="inherit" aria-label="small-screen-btn">
+              <SmallScreenBtn />
+            </IconButton>
+          )}
+        </Toolbar>
+      </AppBar>
+      <Drawer
+        container={container}
+        variant={isSmallScreen ? "temporary" : "persistent"}
+        anchor="left"
+        open={isSmallScreen ? mobileOpen : open}
+        onClose={handleDrawerToggle}
+        sx={{
+          display: { xs: "block", sm: "block" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: drawerWidth,
+            background: "#3F51B5",
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
+      <Main open={open}>
+        <DrawerHeader />
+        {data}
+      </Main>
+    </Box>
   );
 }
+
+Sidebar.propTypes = {
+  window: PropTypes.func,
+  data: PropTypes.element,
+};
+
+export default Sidebar;

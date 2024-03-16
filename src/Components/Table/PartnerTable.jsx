@@ -1,30 +1,29 @@
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+  Collapse,
+  Typography,
+  Button,
+  Checkbox,
+  Select,
+  MenuItem,
+  useMediaQuery,
+} from "@mui/material";
 import React from "react";
-import PropTypes from "prop-types";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import arrowUp from "../../assets/images/Vector-10.png";
 import arrowDown from "../../assets/images/Vector-15.png";
 import CSV from "../../assets/images/csv.png";
 import Tick from "../../assets/images/Vector-4.png";
 import Desh from "../../assets/images/Vector-7.png";
-import {
-  Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  Checkbox,
-  TableHead,
-  TableRow,
-  Select,
-  MenuItem,
-  Box,
-  Typography,
-  Paper,
-  IconButton,
-  Collapse,
-  Button,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 function createData(
   name,
@@ -163,23 +162,41 @@ function Row(props) {
   );
 }
 
-Row.propTypes = {
-  row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
-      PropTypes.shape({
-        amount: PropTypes.number.isRequired,
-        customerId: PropTypes.string.isRequired,
-        date: PropTypes.string.isRequired,
-      })
-    ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    OurCommission: PropTypes.number.isRequired,
-  }).isRequired,
-};
+const rows = [
+  {
+    name: "Darwling Jackson",
+    username: "DJackson",
+    title: "Tester",
+    role: "Editor",
+    history: [
+      { date: "2020-01-05", customerId: "11091700", amount: 3 },
+      { date: "2020-01-02", customerId: "Anonymous", amount: 1 },
+    ],
+    price: 3.99,
+  },
+  {
+    name: "Jhon Phoneix",
+    username: "JP",
+    title: "Database Administrator",
+    role: "Editor",
+    history: [
+      { date: "2020-01-05", customerId: "11091701", amount: 5 },
+      { date: "2020-01-02", customerId: "Anonymous", amount: 2 },
+    ],
+    price: 4.99,
+  },
+  {
+    name: "Maria Domin",
+    username: "MDominguez",
+    title: "IT Manager",
+    role: "Editor",
+    history: [
+      { date: "2020-01-05", customerId: "11091702", amount: 2 },
+      { date: "2020-01-02", customerId: "Anonymous", amount: 3 },
+    ],
+    price: 3.79,
+  },
+];
 
 const dummyRows = [
   createData(
@@ -270,14 +287,15 @@ const dummyRows = [
 
 export default function PartnerTable({ partner }) {
   let value = "";
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
   console.log(partner);
   const newRows = partner.map((partner) => {
     return createData(partner.name, 159, 6.0, 24, 4.0, 3.99, 23);
   });
   const rows = newRows.concat(dummyRows);
   return (
-    <div>
-      {/* Heading with button */}
+    <div className="PartnerTable">
+      {/* Heading and Button Div */}
       <div
         style={{
           display: "flex",
@@ -307,9 +325,9 @@ export default function PartnerTable({ partner }) {
           </span>
         </Button>
       </div>
+      {/* filter row and select all */}
       <div>
-        {/* filter row and select all */}
-        <Container
+        <Box
           sx={{
             background: "#6377E8",
             borderRadius: "10px",
@@ -321,15 +339,19 @@ export default function PartnerTable({ partner }) {
             gap: 2,
           }}
         >
+          {/* select checkbox */}
           <Box
             style={{
               fontWeight: "bold",
               color: "white",
               display: "flex",
               alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
-            Select All
+            <Typography variant="body1" sx={{ color: "white" }}>
+              Select All
+            </Typography>
             <Checkbox sx={{ color: "white" }} />
             <Select
               required
@@ -346,7 +368,7 @@ export default function PartnerTable({ partner }) {
                 color: value === "" ? "grey" : "black",
                 border: "1px solid black",
                 "& .MuiSelect-icon": {
-                  backgroundImage: `url(${arrowDown})`,
+                  //backgroundImage: `url(${arrowDown})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
                   width: 15,
@@ -362,6 +384,7 @@ export default function PartnerTable({ partner }) {
               <MenuItem>Bro</MenuItem>
             </Select>
           </Box>
+          {/* Date code */}
           <Box
             style={{
               fontWeight: "bold",
@@ -371,13 +394,17 @@ export default function PartnerTable({ partner }) {
               background: "#6377E8",
               justifyContent: "center",
               gap: 10,
-              flexDirection: { xs: "column", sm: "row" },
+              flexDirection: { xs: "column", sm: "row", md: "row" },
               alignItems: "center",
+              flexWrap: isSmallScreen && "wrap",
             }}
           >
-            <div style={{ alignSelf: "center" }}>Date:</div>
-            <div style={{ alignSelf: "center" }}>From</div>
-
+            <Typography variant="body1" sx={{ color: "white" }}>
+              Date:
+            </Typography>
+            <Typography variant="body1" sx={{ color: "white" }}>
+              From
+            </Typography>
             <Select
               required
               labelId="demo-simple-select-label"
@@ -393,7 +420,7 @@ export default function PartnerTable({ partner }) {
                 color: value === "" ? "grey" : undefined,
                 border: "1px solid black",
                 "& .MuiSelect-icon": {
-                  backgroundImage: `url(${arrowDown})`,
+                  //backgroundImage: `url(${arrowDown})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
                   width: 15,
@@ -408,9 +435,9 @@ export default function PartnerTable({ partner }) {
             >
               <MenuItem value="">MM/DD/YYYY</MenuItem>
             </Select>
-
-            <div style={{ alignSelf: "center" }}>To</div>
-
+            <Typography variant="body1" sx={{ color: "white" }}>
+              To
+            </Typography>
             <Select
               required
               labelId="demo-simple-select-label"
@@ -426,7 +453,7 @@ export default function PartnerTable({ partner }) {
                 color: value === "" ? "grey" : undefined,
                 border: "1px solid black",
                 "& .MuiSelect-icon": {
-                  backgroundImage: `url(${arrowDown})`,
+                  //backgroundImage: `url(${arrowDown})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
                   width: 15,
@@ -441,7 +468,6 @@ export default function PartnerTable({ partner }) {
             >
               <MenuItem value="">MM/DD/YYYY</MenuItem>
             </Select>
-
             <Select
               required
               labelId="demo-simple-select-label"
@@ -457,7 +483,7 @@ export default function PartnerTable({ partner }) {
                 color: value === "" ? "grey" : "black",
                 border: "1px solid black",
                 "& .MuiSelect-icon": {
-                  backgroundImage: `url(${arrowDown})`,
+                  //backgroundImage: `url(${arrowDown})`,
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
                   width: 15,
@@ -474,22 +500,13 @@ export default function PartnerTable({ partner }) {
               <MenuItem value="New to Old">New to Old</MenuItem>
             </Select>
           </Box>
-        </Container>
+        </Box>
       </div>
-      <Paper>
-        <TableContainer
-          sx={{
-            maxHeight: 440,
-            maxWidth: "100%",
-            overflowY: "scroll",
-            overflowX: "scroll",
-            scrollbarWidth: "thin",
-          }}
-        >
-          {/* Main Table */}
-          <Table aria-label="collapsible table">
+      <Box sx={{ maxHeight: 400, overflow: "auto" }}>
+        <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
+          <Table>
             <TableHead>
-              <TableRow style={{ fontWeight: "bold" }}>
+              <TableRow>
                 <TableCell
                   style={{
                     minWidth: 10,
@@ -528,16 +545,17 @@ export default function PartnerTable({ partner }) {
                 >
                   Total Revenue
                 </TableCell>
+                <TableCell align={"right"}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <Row key={row.name} row={row} style={{ minWidth: 10 }} />
+                <Row key={row.name} row={row} />
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
-      </Paper>
+        </Box>
+      </Box>
     </div>
   );
 }
